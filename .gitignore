@@ -8,6 +8,8 @@ logs
 comandos.txt
 data/custom/labels/*.txt
 
+idea/deteccion-objetos-video.iml
+*.idea/workspace.xml
 
 
 train.txt
