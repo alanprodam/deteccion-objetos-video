@@ -7,6 +7,12 @@ import cv2
 import torch
 from torch.autograd import Variable
 
+from pprint import pprint
+from operator import itemgetter
+
+import itertools
+from itertools import compress
+from random import randrange
 
 def Convertir_RGB(img):
     # Convertir Blue, green, red a Red, green, blue
@@ -18,7 +24,6 @@ def Convertir_RGB(img):
     img[:, :, 2] = b
     return img
 
-
 def Convertir_BGR(img):
     # Convertir red, blue, green a Blue, green, red
     r = img[:, :, 0].copy()
@@ -29,8 +34,29 @@ def Convertir_BGR(img):
     img[:, :, 2] = r
     return img
 
+def calculate_centr(coord):
+  return (coord[0]+(coord[2]/2), coord[1]+(coord[3]/2))
 
+def calculate_centr_distances(centroid_1, centroid_2):
+  return  math.sqrt((centroid_2[0]-centroid_1[0])**2 + (centroid_2[1]-centroid_1[1])**2)
 
+def calculate_perm(centroids):
+  permutations = []
+  for current_permutation in itertools.permutations(centroids, 2):
+    if current_permutation[::-1] not in permutations:
+      permutations.append(current_permutation)
+  return permutations
+
+def midpoint(p1, p2):
+    return ((p1[0] + p2[0])/2, (p1[1] + p2[1])/2)
+
+def calculate_slope(x1, y1, x2, y2):
+    m = (y2-y1)/(x2-x1)
+    return m
+
+# Pixel per meters
+width = 1080
+average_px_meter = (width-150) / 0.07
 
 model_def = 'config/yolov3-custom.cfg'
 weights_path = 'checkpoints/yolov3_ckpt_99.pth'
@@ -103,6 +129,10 @@ if __name__ == "__main__":
             detections = model(imgTensor)
             detections = non_max_suppression(detections, opt.conf_thres, opt.nms_thres)
 
+        listItens = []
+        listCentros = []
+        listCoordenadas = []
+
         for detection in detections:
             if detection is not None:
                 detection = rescale_boxes(detection, opt.img_size, RGBimg.shape[:2])
@@ -110,9 +140,6 @@ if __name__ == "__main__":
                     box_w = x2 - x1
                     box_h = y2 - y1
                     color = [int(c) for c in colors[int(cls_pred)]]
-                    print(
-                        "Resultado: {} - posição X1: {}, Y1: {}, X2: {}, Y2: {}".format(classes[int(cls_pred)], x1, y1,
-                                                                                        x2, y2))
 
                     frame = cv2.rectangle(frame, (x1, y1 + box_h), (x2, y1), color, 3)
 
@@ -122,10 +149,32 @@ if __name__ == "__main__":
                     cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - box_h), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                                 color, 3)  # Certeza de precisão da classe
 
-                print('------')
-        #
-        # Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los colores correctos
 
+                    dict1 = {'Location': int(x1), 'Class': classes[int(cls_pred)]}
+                    listItens.append(dict1)
+                    # print(dict1)
+                # print(listItens)
+                sorted_list = sorted(listItens, key=itemgetter('Location'))
+                num = 0
+                for d in list(sorted_list):
+                    d['Id'] = num
+                    # print('d:', d)
+                    num+=1
+                    if d['Class']=='defeito':
+                        sorted_list.pop()
+                        print('retirar:',int(d['Id']))
+                print('result',sorted_list)
+
+                # pprint(list(enumerate(sorted_list)))
+                # pprint(sorted_list)
+
+                # for id in list(enumerate(sorted_list)):
+                #     # print('out:',list(id))
+                #     if dict1['Class'] == 'defeito':
+                #         print('achou:',list(id))
+                print('----')
+
+        # Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los Convertir_RGBcolores correctos
         if opt.webcam == 1:
             cv2.imshow('frame', Convertir_BGR(RGBimg))
             # out.write(RGBimg)
