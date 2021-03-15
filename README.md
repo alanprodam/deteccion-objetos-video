@@ -80,13 +80,25 @@ Los archivos ```data/custom/valid.txt``` y ```data/custom/train.txt``` deben con
 python split_train_val.py
 ```
 
-## Entrenar
+## Treinamento
 
- ```
- python train.py --model_def config/yolov3-custom.cfg --data_config config/custom.data --pretrained_weights weights/darknet53.conv.74 --batch_size 2
- ```
+```
+python train.py --model_def config/yolov3-custom.cfg --data_config config/custom.data --pretrained_weights weights/darknet53.conv.74 --batch_size 8
+```
+
+```
+tensorboard --logdir='logs'
+```
 
 ## Correr deteccion de objetos en video con nuestras clases
 ```
 python deteccion_video.py --model_def config/yolov3-custom.cfg --checkpoint_model checkpoints/yolov3_ckpt_99.pth --class_path data/custom/classes.names  --weights_path checkpoints/yolov3_ckpt_99.pth  --conf_thres 0.85
 ```
+
+Criando TAG
+
+```
+git tag -a v1.1 -m "versaõ estável 1.1"
+```
+
+

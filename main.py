@@ -30,20 +30,34 @@ def Convertir_BGR(img):
     return img
 
 
+
+
+model_def = 'config/yolov3-custom.cfg'
+weights_path = 'checkpoints/yolov3_ckpt_99.pth'
+class_path = 'data/custom/classes.names'
+conf_thres = 0.9
+batch_size = 2
+pathVideo = '/home/alan/Videos/dataset_completo_parte1.mp4'
+checkpoint_model = 'checkpoints/yolov3_ckpt_99.pth'
+n_cpu = 8
+
+frame_width = 0
+frame_height = 0
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_folder", type=str, default="data/samples", help="path to dataset")
-    parser.add_argument("--model_def", type=str, default="config/yolov3.cfg", help="path to model definition file")
-    parser.add_argument("--weights_path", type=str, default="weights/yolov3.weights", help="path to weights file")
-    parser.add_argument("--class_path", type=str, default="data/coco.names", help="path to class label file")
-    parser.add_argument("--conf_thres", type=float, default=0.8, help="object confidence threshold")
-    parser.add_argument("--webcam", type=int, default=1, help="Is the video processed video? 1 = Yes, 0 == no")
+    parser.add_argument("--model_def", type=str, default=model_def, help="path to model definition file")
+    parser.add_argument("--weights_path", type=str, default=weights_path, help="path to weights file")
+    parser.add_argument("--class_path", type=str, default=class_path, help="path to class label file")
+    parser.add_argument("--conf_thres", type=float, default=conf_thres, help="object confidence threshold")
+    parser.add_argument("--webcam", type=int, default=0, help="Is the video processed video? 1 = Yes, 0 == no")
     parser.add_argument("--nms_thres", type=float, default=0.4, help="iou thresshold for non-maximum suppression")
-    parser.add_argument("--batch_size", type=int, default=1, help="size of the batches")
-    parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
+    parser.add_argument("--batch_size", type=int, default=batch_size, help="size of the batches")
+    parser.add_argument("--n_cpu", type=int, default=n_cpu, help="number of cpu threads to use during batch generation")
     parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
-    parser.add_argument("--directorio_video", type=str, help="Directorio al video")
-    parser.add_argument("--checkpoint_model", type=str, help="path to checkpoint model")
+    parser.add_argument("--directorio_video", type=str, default=pathVideo, help="Directorio al video")
+    parser.add_argument("--checkpoint_model", type=str, default=checkpoint_model, help="path to checkpoint model")
 
     opt = parser.parse_args()
 
@@ -61,21 +75,23 @@ if __name__ == "__main__":
     classes = load_classes(opt.class_path)
     Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
     if opt.webcam == 1:
-        cap = cv2.VideoCapture('/home/alan/Videos/dataset_completo_parte1.mp4')
-        # out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (1280, 960))
+        cap = cv2.VideoCapture(0)
+        frame_width = int(cap.get(3))
+        frame_height = int(cap.get(4))
+        out = cv2.VideoWriter('output.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
     else:
         cap = cv2.VideoCapture(opt.directorio_video)
-        # frame_width = int(cap.get(3))
-        # frame_height = int(cap.get(4))
-        # out = cv2.VideoWriter('outp.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (1280, 960))
+        frame_width = int(cap.get(3))
+        frame_height = int(cap.get(4))
+        # out = cv2.VideoWriter('outp.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
     colors = np.random.randint(0, 255, size=(len(classes), 3), dtype="uint8")
     a = []
     while cap:
         ret, frame = cap.read()
         if ret is False:
             break
-        frame = cv2.resize(frame, (1280, 960), interpolation=cv2.INTER_CUBIC)
-        # LA imagen viene en Blue, Green, Red y la convertimos a RGB que es la entrada que requiere el modelo
+        #frame = cv2.resize(frame, (frame_width, frame_height), interpolation=cv2.INTER_CUBIC)
+        # A imagem vem em Blue, Green, Red, logo nós convertemos para RGB que é a entrada que o modelo chama
         RGBimg = Convertir_RGB(frame)
         imgTensor = transforms.ToTensor()(RGBimg)
         imgTensor, _ = pad_to_square(imgTensor, 0)
@@ -94,13 +110,17 @@ if __name__ == "__main__":
                     box_w = x2 - x1
                     box_h = y2 - y1
                     color = [int(c) for c in colors[int(cls_pred)]]
-                    print("Resultado: {} - posição X1: {}, Y1: {}, X2: {}, Y2: {}".format(classes[int(cls_pred)], x1, y1, x2, y2))
+                    print(
+                        "Resultado: {} - posição X1: {}, Y1: {}, X2: {}, Y2: {}".format(classes[int(cls_pred)], x1, y1,
+                                                                                        x2, y2))
 
                     frame = cv2.rectangle(frame, (x1, y1 + box_h), (x2, y1), color, 3)
 
-                    cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)  # Nome da clase detectada
+                    cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color,
+                                3)  # Nome da clase detectada
 
-                    cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - box_h), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 3)  # Certeza de precisão da classe
+                    cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - box_h), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
+                                color, 3)  # Certeza de precisão da classe
 
                 print('------')
         #
@@ -111,7 +131,7 @@ if __name__ == "__main__":
             # out.write(RGBimg)
         else:
             # out.write(Convertir_BGR(RGBimg))
-            cv2.imshow('frame', RGBimg)
+            cv2.imshow('frame', Convertir_BGR(RGBimg))
         # cv2.waitKey(0)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
