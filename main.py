@@ -2,11 +2,8 @@ from __future__ import division
 from models import *
 from utils.utils import *
 from utils.datasets import *
-import os
-import sys
 import argparse
 import cv2
-from PIL import Image
 import torch
 from torch.autograd import Variable
 
@@ -47,7 +44,9 @@ if __name__ == "__main__":
     parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
     parser.add_argument("--directorio_video", type=str, help="Directorio al video")
     parser.add_argument("--checkpoint_model", type=str, help="path to checkpoint model")
+
     opt = parser.parse_args()
+
     print(opt)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("cuda" if torch.cuda.is_available() else "cpu")
