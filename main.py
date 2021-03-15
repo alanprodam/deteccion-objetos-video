@@ -167,11 +167,6 @@ if __name__ == "__main__":
 
                 # pprint(list(enumerate(sorted_list)))
                 # pprint(sorted_list)
-
-                # for id in list(enumerate(sorted_list)):
-                #     # print('out:',list(id))
-                #     if dict1['Class'] == 'defeito':
-                #         print('achou:',list(id))
                 print('----')
 
         # Convertimos de vuelta a BGR para que cv2 pueda desplegarlo en los Convertir_RGBcolores correctos
