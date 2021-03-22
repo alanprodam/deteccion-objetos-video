@@ -40,20 +40,6 @@ def calculate_centr(coord):
 def calculate_centr_distances(centroid_1, centroid_2):
   return  math.sqrt((centroid_2[0]-centroid_1[0])**2 + (centroid_2[1]-centroid_1[1])**2)
 
-def calculate_perm(centroids):
-  permutations = []
-  for current_permutation in itertools.permutations(centroids, 2):
-    if current_permutation[::-1] not in permutations:
-      permutations.append(current_permutation)
-  return permutations
-
-def midpoint(p1, p2):
-    return ((p1[0] + p2[0])/2, (p1[1] + p2[1])/2)
-
-def calculate_slope(x1, y1, x2, y2):
-    m = (y2-y1)/(x2-x1)
-    return m
-
 # Pixel per meters
 width = 1080
 average_px_meter = (width-150) / 0.07
