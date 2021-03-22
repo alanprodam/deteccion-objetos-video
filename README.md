@@ -1,37 +1,40 @@
-# Deteccion de objetos en video 
-Este repo basado en el proyecto [PyTorch YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) para correr detección de objetos sobre video. Construí sobre este proyecto para añadir la capacidad de detectar objetos en un stream de video en vivo.
+# Detecção de Objetos - Utilizando Yolo v3
 
-[YOLO](https://pjreddie.com/darknet/yolo/) (**You Only Look Once** o Tú Solo Ves Una Vez, pero TSVUV no suena tan bien) es un modelo el cual esta optimizado para generar detecciones de elementos a una velocidad muy alta, es por eso que es una muy buena opción para usarlo en video. Tanto el entrenamiento como predicciones con este modelo se ven beneficiadas si se cumple con una computadora que tenga una GPU NVIDIA.
+Este repositório é baseado no projeto [PyTorch YOLOv3](https://github.com/puigalex/deteccion-objetos-video) para executar a detecção de objetos no vídeo. Foi desenvolvido este projeto para adicionar a capacidade de detectar objetos em uma transmissão de vídeo ao vivo.
 
-Por default este modelo esta pre entrenado para detecta 80 distintos objetos, la lista de estos se encuentra en el archivo [data/coco.names](https://github.com/puigalex/deteccion-objetos-video/blob/master/data/coco.names)
+[YOLO](https://pjreddie.com/darknet/yolo/) (**You Only Look Once**) é um modelo que está otimizado para gerar detecções de elementos a uma velocidade muito alta, por isso é uma opção muito boa para usá-lo em vídeo. O treinamento e as previsões com este modelo se beneficiam de um computador que possui uma GPU NVIDIA.
 
-Los pasos a seguir para poder correr detección de objetos en el video de una webcam son los siguientes (La creación del ambiente asume que Anaconda esta instalado en la computadora):
+Por padrão, este modelo é pré-treinado para detectar 80 objetos diferentes, a lista deles está no arquivo [data/coco.names](https://github.com/puigalex/deteccion-objetos-video/blob/master/data/coco.names)
 
-# Crear ambiente
-Para tener en orden nuestras paqueterias de python primero vamos a crear un ambiente llamado "deteccionobj" el cual tiene la version 3.6 de python
+Os passos a seguir para poder executar a detecção de objetos no vídeo de uma webcam são os seguintes (A criação do ambiente pressupõe que o Anaconda está instalado no computador):
+
+# Criar ambiente
+Para colocar nossos pacotes python em ordem, primeiro vamos criar um ambiente chamado `detecObj` que tenha a versão 3.6 do python
 ``` 
-conda create -n deteccionobj python=3.6
+conda create -n detecObj python=3.6
 ```
 
-Activamos el ambiente deteccionobj para asegurarnos que estemos en el ambiente correcto al momento de hacer la instalación de todas las paqueterias necesarias
+Ativamos o ambiente `detecObj` para garantir que estamos no ambiente correto ao instalar todos os pacotes necessários
 ```
-source activate deteccionobj
+source activate detecObj
 ```
 
-# Instalación de las paqueterias
-Estando dentro de nuestro ambiente vamos a instalar todas las paqueterias necesarias para correr nuestro detector de objetos en video, la lista de los paqueter y versiones a instalar están dentro del archivo requirements.txt por lo cual instalaremos haciendo referencia a ese archivo
+# Instalação das Dependências
+
+Estando dentro de nosso ambiente vamos instalar todos os pacotes necessários para rodar nosso detector de objetos de vídeo, a lista de pacotes e versões a serem instaladas estão dentro do arquivo requirements.txt, então instalaremos referindo-se a esse arquivo
 ```
 pip install -r requirements.txt
 ```
 
-# Descargar los pesos del modelo entrenado 
-Para poder correr el modelo de yolo tendremos que descargar los pesos de la red neuronal, los pesos son los valores que tienen todas las conexiones entre las neuronas de la red neuronal de YOLO, este tipo de modelos son computacionalmente muy pesados de entrenar desde cero por lo cual descargar el modelo pre entrenado es una buena opción.
+# Descarregando os pesos do modelo treinado
+
+Para rodar o modelo YOLO teremos que baixar os pesos da rede neural, os pesos são os valores que todas as conexões têm entre os neurônios da rede neural YOLO, este tipo de modelos são computacionalmente muito pesados ​​para treinar do zero, baixando o modelo pré-treinado é uma boa opção.
 
 ```
 bash weights/download_weights.sh
 ```
 
-Movemos los pesos descargados a la carpeta llamada weights
+Nós movemos os pesos baixados para a pasta chamada `weights`
 ```
 mv yolov3.weights weights/
 ```
