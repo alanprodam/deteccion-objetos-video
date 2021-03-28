@@ -141,6 +141,7 @@ if __name__ == "__main__":
                     # print(dict1)
                 # print(listItens)
                 sorted_list = sorted(listItens, key=itemgetter('Location'))
+                print('Transformadores:', sorted_list)
                 num = 0
                 for d in list(sorted_list):
                     d['Id'] = num
