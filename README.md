@@ -39,26 +39,26 @@ Nós movemos os pesos baixados para a pasta chamada `weights`
 mv yolov3.weights weights/
 ```
 
-# Correr el detector de objetos en video 
-Por ultimo corremos este comando el cual activa la camara web para poder hacer deteccion de video sobre un video "en vivo"
+# Executando o detector de objetos em vídeo
+Finalmente, executamos este comando que ativa a câmera da web para ser capaz de detectar o vídeo em um vídeo "ao vivo".
 ```
 python deteccion_video.py
 ```
 
-# Modificaciones
-Si en vez de correr detección de objetos sobre la webcam lo que quieres es correr el modelo sobre un video que ya fue pre grabado tienes que cambiar el comando para correr el codigo a:
+# Modificações
+Se, em vez de executar a detecção de objetos na webcam, o que você deseja é executar o modelo em um vídeo que já foi pré-gravado, você deve alterar o comando para executar o código para:
 
 ```
 python deteccion_video.py --webcam 0 --directorio_video <directorio_al_video.mp4>
 ```
 
-# Entrenamiento 
+# Treinamento (Novo Dataset) 
 
-Ahora, si lo que quieres es entrenar un modelo con las clases que tu quieras y no utilizar las 80 clases que vienen por default podemos entrenar nuestro propio modelo. Estos son los pasos que deberás seguir:
+Deve-se seguir as seguintes etapas paraa realizar treinamento com o próprio modelo:
 
-Primero deberás etiquetar las imagenes con el formato VOC, aqui tengo un video explicando como hacer este etiquetado: 
+Primeiro você deve rotular as imagens com o formato VOC, basicamento usando labelImg no formato yolo:
 
-Desde la carpeta config correremos el archivo create_custom_model para generar un archivo .cfg el cual contiene información sobre la red neuronal para correr las detecciones
+Na pasta de configuração, executaremos o arquivo `create_custom_model` para gerar um arquivo `.cfg` que contém informações sobre a rede neural para executar as detecções
 ```
 cd config
 bash create_custom_model.sh <Numero_de_clases_a_detectar>
@@ -71,14 +71,14 @@ bash download_darknet.sh
 cd ..
 ```
 
-## Poner las imagenes y archivos de metadata en las carpetar necesarias
+## Coloque as imagens e os arquivos de metadados nas pastas necessárias
 
-Las imagenes etiquetadas tienen que estar en el directorio **data/custom/images** mientras que las etiquetas/metadata de las imagenes tienen que estar en **data/custom/labels**.
-Por cada imagen.jpg debe de existir un imagen.txt (metadata con el mismo nombre de la imagen)
+As imagens marcadas devem estar no diretório **data/custom/images** enquanto as tags / metadados da imagem devem estar em **data/custom/labels**.
+Para cada imagem.jpg deve haver uma imagem.txt (metadados com o mesmo nome da imagem)
 
-El archivo ```data/custom/classes.names``` debe contener el nombre de las clases, como fueron etiquetadas, un renglon por clase.
+O arquivo ```data/custom/classes.names``` deve conter o nome das classes, como foram rotuladas, uma linha por classe.
 
-Los archivos ```data/custom/valid.txt``` y ```data/custom/train.txt``` deben contener la dirección donde se encuentran cada una de las imagenes. Estos se pueden generar con el siguiente comando (estando las imagenes ya dentro de ```data/custom/images```)
+Os arquivos ```data/custom/valid.txt``` e ```data/custom/train.txt``` devem conter o endereço onde cada uma das imagens está localizada. Estes podem ser gerados com o seguinte comando (com as imagens já dentro ```data/custom/images```)
 ```
 python split_train_val.py
 ```
@@ -93,7 +93,7 @@ python train.py --model_def config/yolov3-custom.cfg --data_config config/custom
 tensorboard --logdir='logs'
 ```
 
-## Correr deteccion de objetos en video con nuestras clases
+## Executando a detecção de objetos em vídeo com nossas classes
 ```
 python deteccion_video.py --model_def config/yolov3-custom.cfg --checkpoint_model checkpoints/yolov3_ckpt_99.pth --class_path data/custom/classes.names  --weights_path checkpoints/yolov3_ckpt_99.pth  --conf_thres 0.85
 ```
