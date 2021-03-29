@@ -86,7 +86,7 @@ python split_train_val.py
 ## Treinamento
 
 ```
-python train.py --model_def config/yolov3-custom.cfg --data_config config/custom.data --pretrained_weights weights/darknet53.conv.74 --batch_size 8
+python train.py --model_def config/yolov3-custom.cfg --data_config config/custom.data --pretrained_weights weights/darknet53.conv.74 --batch_size 2
 ```
 
 ```
