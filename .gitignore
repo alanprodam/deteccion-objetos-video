@@ -4,6 +4,7 @@
 *.mp4
 #*.jpg
 *.pth
+.idea/*
 logs
 comandos.txt
 #data/custom/labels/*.txt
