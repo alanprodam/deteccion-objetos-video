@@ -129,7 +129,7 @@ if __name__ == "__main__":
                     color = [int(c) for c in colors[int(cls_pred)]]
 
                     # frame = cv2.rectangle(frame, (x1, y1 + box_h), (x2, y1), color, 3)
-
+                    # frame = cv2.rectangle(frame, (384, 0), (510, 128), (0, 255, 0), 3)
 
                     cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)  # Nome da clase detectada
 
