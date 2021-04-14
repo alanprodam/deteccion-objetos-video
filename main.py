@@ -47,10 +47,25 @@ average_px_meter = (width-150) / 0.07
 model_def = 'config/yolov3-custom.cfg'
 weights_path = 'checkpoints/yolov3_ckpt_99.pth'
 class_path = 'data/custom/classes.names'
-conf_thres = 0.9
+conf_thres = 0.99
 batch_size = 2
-# pathVideo = '/home/alan/Videos/dataset_completo_parte1.mp4'
-pathVideo = '/home/alan/Documents/data-files/classe1_(fio-solto).mp4'
+# class 0 - transformadores bons
+# pathVideo = '/home/alan/Documents/data-files/class0_(boas).mp4'
+
+# class 1 - transformadores com fio solto
+# pathVideo = '/home/alan/Documents/data-files/classe1_(fio-solto).mp4'
+
+# class 2 - transformadores falta enrolamento
+# pathVideo = '/home/alan/Documents/data-files/classe2_(falta-fita).mp4'
+
+# class 3 - transformadores falta fita
+pathVideo = '/home/alan/Documents/data-files/classe3_(falta-enrolamento).mp4'
+
+# class 0 - transformadores "bons"
+# class 1 - transformadores "com fio solto"
+# class 2 - transformadores "falta enrolamento"
+# class 3 - transformadores "falta fita"
+
 checkpoint_model = 'checkpoints/yolov3_ckpt_99.pth'
 n_cpu = 8
 
@@ -96,6 +111,13 @@ if __name__ == "__main__":
         cap = cv2.VideoCapture(opt.directorio_video)
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
+
+        print('frame_width:', int(cap.get(3)))
+        print('frame_height:', int(cap.get(4)))
+
+        fator = 2
+        dim = (int(3840/fator), int(2160/fator))
+
         # out = cv2.VideoWriter('outp.mp4', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
     colors = np.random.randint(0, 255, size=(len(classes), 3), dtype="uint8")
     a = []
@@ -103,7 +125,7 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         if ret is False:
             break
-        #frame = cv2.resize(frame, (frame_width, frame_height), interpolation=cv2.INTER_CUBIC)
+        frame = cv2.resize(frame, dim, interpolation=cv2.INTER_CUBIC)
         # A imagem vem em Blue, Green, Red, logo nós convertemos para RGB que é a entrada que o modelo chama
         RGBimg = Convertir_RGB(frame)
         imgTensor = transforms.ToTensor()(RGBimg)
@@ -124,18 +146,32 @@ if __name__ == "__main__":
             if detection is not None:
                 detection = rescale_boxes(detection, opt.img_size, RGBimg.shape[:2])
                 for x1, y1, x2, y2, conf, cls_conf, cls_pred in detection:
-                    box_w = x2 - x1
-                    box_h = y2 - y1
+                    x1 = int(x1)
+                    y1 = int(y1)
+                    x2 = int(x2)
+                    y2 = int(y2)
+                    box_w = (x2 - x1)
+                    box_h = (y2 - y1)
                     color = [int(c) for c in colors[int(cls_pred)]]
 
-                    # frame = cv2.rectangle(frame, (x1, y1 + box_h), (x2, y1), color, 3)
-                    # frame = cv2.rectangle(frame, (384, 0), (510, 128), (0, 255, 0), 3)
+                    frame = cv2.rectangle(frame, (x1, y1 + box_h), (x2, y1), color, 3)
 
-                    cv2.putText(frame, classes[int(cls_pred)], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)  # Nome da clase detectada
+                    if classes[int(cls_pred)] == 'class0':
+                        result = 'conforme'
+                    elif classes[int(cls_pred)] == 'class1':
+                        result = 'fio_solto'
+                    elif classes[int(cls_pred)] == 'class2':
+                        result = 'falta_fita'
+                    else:
+                        result = 'falta_enrolamento'
+
+                    cv2.putText(frame,
+                                result,
+                                (x1, y1),
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, color,3)  # Nome da clase detectada
 
                     cv2.putText(frame, str("%.2f" % float(conf)), (x2, y2 - box_h), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                                 color, 3)  # Certeza de precisão da classe
-
 
                     dict1 = {'Location': int(x1), 'Class': classes[int(cls_pred)]}
                     listItens.append(dict1)
