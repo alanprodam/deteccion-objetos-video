@@ -1,4 +1,4 @@
-# Detecção de pinos e molas para o Projeto Springer - SALCOMP
+# Detecção e Inspeção de Transformadores para o Projeto Transformer
 O projeto tem como base principal usar o [PyTorch YOLOv3](https://github.com/eriklindernoren/PyTorch-YOLOv3) a fim de detectar elementos presentes na fonte de alimentação do Springer. Estes elementos foram classificados como **Pino** e **Molas**
 
 [YOLO](https://pjreddie.com/darknet/yolo/) (**You Only Look Once**) é um modelo de rede neural profunda o qual está otimizado para obter detecções em velocidades elevadas, isto é, torna-se uma boa opção para rodar em **VÍDEO**. O desempenho funciona muito melhor se o computador tem uma GPU dedicada da NVIDIA.
